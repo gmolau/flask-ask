@@ -819,7 +819,11 @@ class Ask(object):
             if intent.slots is not None:
                 for slot_key in intent.slots.keys():
                     slot_object = getattr(intent.slots, slot_key)
-                    request_data[slot_object.name] = getattr(slot_object, 'value', None)
+                    slot_resolutions = getattr(slot_object, 'resolutions', None)
+                    if slot_resolutions and slot_resolutions.resolutionsPerAuthority[0].status.code == 'ER_SUCCESS_MATCH':
+                            request_data[slot_object.name] = slot_resolutions.resolutionsPerAuthority[0].values[0].value.id
+                    else:
+                        request_data[slot_object.name] = getattr(slot_object, 'value', None)
 
         else:
             for param_name in self.request:
